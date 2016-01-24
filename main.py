@@ -18,6 +18,12 @@ class Position:
         """Returns position as tuple, (x,y)."""
         return self.coords
 
+    def move(self, move):
+        """Returns new position after specified move on an infinite grid"""
+        x, y = self.coords
+        dx, dy = move.vector()
+        return Position(x+dx, y+dy)
+
     def clone(self):
         """Copy self"""
         return Position(self.coords[0], self.coords[1])
@@ -40,17 +46,14 @@ class Move:
     def __init__(self, delta_x, delta_y):
         self._vector = (delta_x, delta_y)
 
-    def get_delta_x(self):
-        """Move along x-axis"""
-        return self._vector[0]
-
-    def get_delta_y(self):
-        """Move along y-axis"""
-        return self._vector[1]
-
     def vector(self):
         return self._vector
 
+    def __add__(self, other):
+        selfx, selfy = self.vector()
+        otherx, othery = other.vector()
+        return Move(selfx+otherx, selfy+othery)
+        
     def __str__(self):
         return "m({:2},{:2})".format(self._vector[0], self._vector[1])
 
@@ -93,23 +96,25 @@ class Board:
         
         oldX, oldY = self._checkPosition(position)
 
-        newX = oldX + movement.get_delta_x()
-        newY = oldY + movement.get_delta_y()
+        newPos = position.move(movement)
+        newPos = self._restrictToBoard(newPos)
+        
+        windMove = self.wind.blow(newPos)
 
-        newX = min(self.max_x, max(0, newX))
-        newY = min(self.max_y, max(0, newY))
+        newPos = newPos.move(windMove)
+        newPos = self._restrictToBoard(newPos)
 
-        windMove = self.wind.blow(Position(newX, newY))
-        wind_x, wind_y = windMove.vector()
-
-        newX = min(self.max_x, max(0, newX + wind_x))
-        newY = min(self.max_y, max(0, newY + wind_y))
-                   
-        return Position(newX, newY)
+        return newPos
                            
     def dimensions(self):
         """Board dimensions (A,B): 0<=x<=A, 0<=y<=B"""
         return self.max_x, self.max_y
+
+    def _restrictToBoard(self, position):
+        x,y = position.coordinates()
+        x = min(self.max_x, max(0, x))
+        y = min(self.max_y, max(0, y))
+        return Position(x,y)
 
     def _checkPosition(self, position):
         """Returns (x,y). Raises exception if position not on board"""
@@ -154,11 +159,11 @@ def printPolicy(board, Q, moveSymbolMap, goalPosition):
     print(text)
 
 def defaultActionValue():
+    """Initial estimated value of state-action pair"""
     return 1
 
-
-
 def generateStrategy(board, startPos, goalPos):
+    """Run temporal difference method and print final best actions"""
     allowedMoves = [Move(-1,0), Move(1,0), Move(0,1), Move(0,-1)]
     moveSymbolMap = {Move(-1,0):"L", Move(1,0):"R", Move(0,1):"U", Move(0,-1):"D"}
     gamma = 0.9
@@ -193,12 +198,13 @@ def generateStrategy(board, startPos, goalPos):
             else:
                 pos = newPos
 
-    print("Exhausted ... stopping.\n")
+    print("Exhausted after {} steps... stopping.\n".format(totalSteps))
 
     printPolicy(board, Q, moveSymbolMap, goalPos)
 
 
 def example1():
+    """Example of 10x7 board with a wind from the south"""
     windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} # Increment y by this amount when movement ends with x on the key-value
     wind = SouthWind(windSpeeds)
     board = Board(10, 7, wind)
