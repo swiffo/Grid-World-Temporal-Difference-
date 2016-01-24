@@ -6,6 +6,7 @@ On a rectangular grid, the Grid World, an agent, starting at a given point, has 
 
 The grid is bounded by an invisible wall. Any movement that would take the agent outside the grid instead places him at the edge. The wind contribution to the agent's move is based on his starting position in each time-step.
 
+## Example
 As an example consider a 10-by-7 grid, with start in (1,3) and end in (7,3) (lower-left coordinate is (0,0)). Let there be a wind that blows north (upwards), moving the agent involuntarily upwards by one step when his x-coordinate is 3,4,5 or 8 and up by two steps when his x-coordinate is 6 or 7. With 25,000 steps the algorithm learns the following (randomizer not seeded):
 
 ```
