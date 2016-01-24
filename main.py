@@ -4,59 +4,61 @@ class Position:
     """A grid position (x,y)"""
     
     def __init__(self, x, y ):
-        self.x = x
-        self.y = y
+        self.coords = (x,y)
 
     def get_x(self):
         """x-coordinate"""
-        return self.x
+        return self.coords[0]
 
     def get_y(self):
         """y-coordinate"""
-        return self.y
+        return self.coords[1]
+
+    def coordinates(self):
+        """Returns position as tuple, (x,y)."""
+        return self.coords
 
     def clone(self):
         """Copy self"""
-        return Position(self.x, self.y)
+        return Position(self.coords[0], self.coords[1])
 
     def __str__(self):
-        return "P({:2},{:2})".format(self.x, self.y)
+        return "P({:2},{:2})".format(self.coords[0], self.coords[1])
 
     def __repr__(self):
-        return "P({},{})".format(self.x, self.y)
+        return "P({},{})".format(self.coords[0], self.coords[1])
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        return self.coords == other.coords
 
     def __hash__(self):
-        return hash((self.x, self.y))
+        return hash(self.coords)
         
 
 class Move:
     """A move on the grid, e.g., (+3,-2)"""
     def __init__(self, delta_x, delta_y):
-        self.x = delta_x
-        self.y = delta_y
+        self.vector = (delta_x, delta_y)
 
     def get_delta_x(self):
         """Move along x-axis"""
-        return self.x
+        return self.vector[0]
 
     def get_delta_y(self):
         """Move along y-axis"""
-        return self.y
+        return self.vector[1]
 
     def __str__(self):
-        return "m({:2},{:2})".format(self.x, self.y)
+        return "m({:2},{:2})".format(self.vector[0], self.vector[1])
 
     def __repr__(self):
-        return "m({},{})".format(self.x, self.y)
+        return "m({},{})".format(self.vector[0], self.vector[1])
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        return self.vector == other.vector
     
     def __hash__(self):
-        return hash((self.x, self.y))
+        return hash(self.vector)
 
 
 class InvalidPositionException(BaseException):
