@@ -204,11 +204,12 @@ def generateStrategy(board,
                      totalSteps=25000, # Number of steps (whether we reach the goal or not) involved in the learning
                      alpha=0.05,       # The learning speed
                      gamma=0.9,        # Time value of future rewards (affects how much we appreciate speedy solutions)
-                     epsilon=0.05):    # The epsilon of the epsilon-greedy strategy (how often we explore randomly) 
+                     epsilon=0.05,     # The epsilon of the epsilon-greedy strategy (how often we explore randomly)
+                     moveSymbolMap = {Move(-1,0):"L", Move(1,0):"R", Move(0,1):"U", Move(0,-1):"D"}
+                     ):
     """Run temporal difference method and print final best actions"""
 
     # Create the moves the agent can makes as well as their ASCII representations
-    moveSymbolMap = {Move(-1,0):"L", Move(1,0):"R", Move(0,1):"U", Move(0,-1):"D"}
     allowedMoves  = list(moveSymbolMap.keys())
 
     Q = dict() # The state-action (estimated) values. Entry keys are (pos, move).
