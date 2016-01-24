@@ -257,7 +257,7 @@ def generateStrategy(board,
 
 def example1():
     """Example of 10x7 board with a wind from the south"""
-    windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} # Increment y by this amount when movement ends with x on the key-value
+    windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} 
     wind = SouthWind(windSpeeds)
     board = Board(10, 7, wind)
     startPos = Position(1, 3)
@@ -274,6 +274,25 @@ def example2():
     goalPosition     = Position(10, 3)
 
     generateStrategy(board, startingPosition, goalPosition, totalSteps=50000)
+
+def example3():
+    windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} 
+    wind = SouthWind(windSpeeds)
+    board = Board(10, 7, wind)
+    startPos = Position(1, 3)
+    goalPos = Position(7,3)
+    moves = {
+        Move(1,0):"R",
+        Move(-1,0):"L",
+        Move(0,1):"U",
+        Move(0,-1):"D",
+        Move(1,1):"3",
+        Move(1,-1):"9",
+        Move(-1,1):"1",
+        Move(-1,-1):"7"
+        }
+
+    generateStrategy(board, startPos, goalPos, totalSteps=50000, moveSymbolMap=moves)
     
     
 
