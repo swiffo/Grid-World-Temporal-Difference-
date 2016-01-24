@@ -57,6 +57,7 @@ class Move:
         self._vector = (delta_x, delta_y)
 
     def vector(self):
+        """Returns move as tuple, (delta_x, delta_y)"""
         return self._vector
 
     def __add__(self, other):
@@ -100,6 +101,7 @@ class SouthWind:
 
 class WestWind:
     """Rules for wind blowing to the right"""
+    # The most famous of the Greek anemoi (winds), Zephyrus (or Zephyr). **APPLAUSE**
 
     def __init__(self, windSpeed=dict()):
         self.windSpeed = windSpeed
