@@ -91,17 +91,13 @@ class Board:
         self.max_y = height - 1
         self.wind = wind
     
-    def move(self, position, movement):
+    def move(self, position, agentMove):
         """Move agent from specified position under the rules of the board. Returns new position"""
-        
-        oldX, oldY = self._checkPosition(position)
+        self._checkPosition(position)
 
-        newPos = position.move(movement)
-        newPos = self._restrictToBoard(newPos)
-        
-        windMove = self.wind.blow(newPos)
+        actualMove = agentMove + self.wind.blow(position)
 
-        newPos = newPos.move(windMove)
+        newPos = position.move(actualMove)
         newPos = self._restrictToBoard(newPos)
 
         return newPos
@@ -122,8 +118,6 @@ class Board:
 
         if x < 0 or x > self.max_x or y < 0 or y > self.max_y:
             raise InvalidPositionException
-
-        return x,y
 
 def maxArg(array):
     """Returns index of highest value. In case of ties, returns lowest index."""
@@ -162,14 +156,16 @@ def defaultActionValue():
     """Initial estimated value of state-action pair"""
     return 1
 
-def generateStrategy(board, startPos, goalPos):
+def generateStrategy(board,
+                     startPos,
+                     goalPos,
+                     totalSteps=25000,
+                     alpha=0.05,
+                     gamma=0.9,
+                     epsilon=0.05):
     """Run temporal difference method and print final best actions"""
     allowedMoves = [Move(-1,0), Move(1,0), Move(0,1), Move(0,-1)]
     moveSymbolMap = {Move(-1,0):"L", Move(1,0):"R", Move(0,1):"U", Move(0,-1):"D"}
-    gamma = 0.9
-    epsilon = 0.05
-    alpha = 0.05
-    totalSteps = 10000
 
     Q = dict()
     pos = startPos.clone()
@@ -208,8 +204,8 @@ def example1():
     windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} # Increment y by this amount when movement ends with x on the key-value
     wind = SouthWind(windSpeeds)
     board = Board(10, 7, wind)
-    startPos = Position(0, 3)
-    goalPos = Position(8,3)
+    startPos = Position(1, 3)
+    goalPos = Position(7,3)
 
     generateStrategy(board, startPos, goalPos)
     
