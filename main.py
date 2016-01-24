@@ -107,6 +107,7 @@ class Board:
         return self.max_x, self.max_y
 
     def _restrictToBoard(self, position):
+        """Pulls position on infinite grid to closest position on board"""
         x,y = position.coordinates()
         x = min(self.max_x, max(0, x))
         y = min(self.max_y, max(0, y))
@@ -133,7 +134,7 @@ def maxArg(array):
 
 def printPolicy(board, Q, moveSymbolMap, goalPosition):
     """Prints ASCII representation of the best move for each board position"""
-    unknownMove = "*"
+    unknownMove  = "*"
     allowedMoves = list(moveSymbolMap.keys())
     max_x, max_y = board.dimensions()
 
@@ -159,23 +160,33 @@ def defaultActionValue():
 def generateStrategy(board,
                      startPos,
                      goalPos,
-                     totalSteps=25000,
-                     alpha=0.05,
-                     gamma=0.9,
-                     epsilon=0.05):
+                     totalSteps=25000, # Number of steps (whether we reach the goal or not) involved in the learning
+                     alpha=0.05,       # The learning speed
+                     gamma=0.9,        # Time value of future rewards (affects how much we appreciate speedy solutions)
+                     epsilon=0.05):    # The epsilon of the epsilon-greedy strategy (how often we explore randomly) 
     """Run temporal difference method and print final best actions"""
-    allowedMoves = [Move(-1,0), Move(1,0), Move(0,1), Move(0,-1)]
-    moveSymbolMap = {Move(-1,0):"L", Move(1,0):"R", Move(0,1):"U", Move(0,-1):"D"}
 
-    Q = dict()
-    pos = startPos.clone()
+    # Create the moves the agent can makes as well as their ASCII representations
+    moveSymbolMap = {Move(-1,0):"L", Move(1,0):"R", Move(0,1):"U", Move(0,-1):"D"}
+    allowedMoves  = list(moveSymbolMap.keys())
+
+    Q = dict() # The state-action (estimated) values. Entry keys are (pos, move).
+    
     print("Starting wild wandering ...")
-    for step in range(totalSteps):
+    pos = startPos.clone()
+    for _step in range(totalSteps):
         if random.random() < epsilon:
-            chosenMove = random.choice(allowedMoves)
+            # With chance epsilon we do a random exploratory move
+            chosenMove = random.choice(allowedMoves) 
         else:
+            # Otherwise we choose the estimated optimal move
+
+            # Find the best move
             actionVals = [Q.setdefault((pos, m), defaultActionValue()) for m in allowedMoves]
             chosenMove = allowedMoves[maxArg(actionVals)]
+
+            # Estimate the value of the position we arrive at. It's the value of the state-action pair chosen under
+            # our epsilon-greedy strategy.
             newPos = board.move(pos, chosenMove)
             if random.random() < epsilon:
                 newPosMove = random.choice(allowedMoves)
@@ -184,18 +195,19 @@ def generateStrategy(board,
                 
             newPosVal = gamma * Q.setdefault((newPos, newPosMove), defaultActionValue())
 
+            # Adjust the value of the (current position, chosenMove) pair.
             valueIncrement = alpha * (newPosVal - Q[(pos,chosenMove)])
             if newPos == goalPos:
-                valueIncrement += alpha * 100
+                valueIncrement += alpha * 100 # If we have arrived at the goal, that's worth 100!!
             Q[(pos,chosenMove)] += valueIncrement
 
+            # If we arrived at the goal, end the episode and start over.
             if newPos == goalPos:
                 pos = startPos
             else:
                 pos = newPos
 
     print("Exhausted after {} steps... stopping.\n".format(totalSteps))
-
     printPolicy(board, Q, moveSymbolMap, goalPos)
 
 
@@ -208,6 +220,8 @@ def example1():
     goalPos = Position(7,3)
 
     generateStrategy(board, startPos, goalPos)
+
+
     
 
     
