@@ -276,6 +276,7 @@ def example2():
     generateStrategy(board, startingPosition, goalPosition, totalSteps=50000)
 
 def example3():
+    """Same as example1 but with diagonal moves available too."""
     windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} 
     wind = SouthWind(windSpeeds)
     board = Board(10, 7, wind)
