@@ -1,18 +1,26 @@
 import random
 
+##    The Windy Gridworld learning problem is the task of finding an optimal way of going from one point to
+##    another on a rectangular grid while being pushed around by wind. We will solve this using the sarsa
+##    algorithm, an on-policy temporal difference learning algorithm.
+##
+##    The main thing to implement for the learning algorithm is the world itself. That is the
+##    "windy grid" which we will call a 'Board'. It consists of a bounded grid and the wind specifications.
+##
+##    Before getting to that we will implement position and move classes. Arguably these could be implemented
+##    simply using tuples, (x,y), saving a lot of code. Implementing them as classes, however, has some benefits:
+##        (a) It conceptually separates space and tangent space (They look the same in R^2 but aren't).
+##        (b) It makes clear whether an object is a position or a move (both in code and string representation).
+##        (c) It allows for a few helpful methods (like adding moves together)
+##
+##    Against this stands that most of the implementation of these classes would come for free when using tuples.
+##    Mainly for reason (a) and (b) we choose to implement them as classes.                                                           
+
 class Position:
     """A grid position (x,y)"""
     
     def __init__(self, x, y ):
         self.coords = (x,y)
-
-    def get_x(self):
-        """x-coordinate"""
-        return self.coords[0]
-
-    def get_y(self):
-        """y-coordinate"""
-        return self.coords[1]
 
     def coordinates(self):
         """Returns position as tuple, (x,y)."""
@@ -40,6 +48,8 @@ class Position:
     def __hash__(self):
         return hash(self.coords)
         
+##    In implementing the Move class, we see one important difference between moves and positions
+##    that would not be clear or enforceable using tuples: Moves can be added together; positions cannot.
 
 class Move:
     """A move on the grid, e.g., (+3,-2)"""
@@ -71,18 +81,42 @@ class InvalidPositionException(BaseException):
     """Exception for referring to a position not on the board"""
     pass
 
+##    We now move on to defining the world. It consists of a bounded grid and the wind conditions.
+##    The wind is implemented as a class with a single method, 'blow', giving a move based on
+##    position.
+
 class SouthWind:
     """Rules for wind blowing upwards"""
+    # On an irrelevant note, the south wind in Greek mythology is called Notos.
 
     def __init__(self, windSpeed=dict()):
         self.windSpeed = windSpeed
 
     def blow(self, position):
-        """Returns the move the wind makes on agent"""
+        """Returns the move the wind contributes"""
         x = position.coordinates()[0]
         windSpeed = self.windSpeed.get(x, 0)
         return Move(0, windSpeed)
 
+class WestWind:
+    """Rules for wind blowing to the right"""
+
+    def __init__(self, windSpeed=dict()):
+        self.windSpeed = windSpeed
+
+    def blow(self, position):
+        """Returns the move the wind contributes"""
+        y = position.coordinates()[1]
+        windSpeed = self.windSpeed.get(y, 0)
+        return Move(windSpeed, 0)
+
+##    Finally we implement the board. We restrict to rectangular boards and a such the board/world is
+##    determined entirely by the width, height and wind conditions. The purpose of the board is to
+##    convert the agent action (an intended move) in a given state (position) into a new state (position).
+##
+##    Our world has walls around it. Hence the agent cannot be blown off the board but will be stopped
+##    by the wall if any move would result in the agent otherwise careening off into empty space.
+                                                                                          
 class Board:
     """Grid world. Contains all the world rules"""
  
@@ -120,8 +154,11 @@ class Board:
         if x < 0 or x > self.max_x or y < 0 or y > self.max_y:
             raise InvalidPositionException
 
+##    Lastly we implement some helpful functions.
+
 def maxArg(array):
     """Returns index of highest value. In case of ties, returns lowest index."""
+    # I'm sure this function must be in some library somewhere but ...
     max_index = 0
     max_value = array[0]
 
@@ -155,6 +192,8 @@ def printPolicy(board, Q, moveSymbolMap, goalPosition):
 
 def defaultActionValue():
     """Initial estimated value of state-action pair"""
+    # This is turned into a function to allow for other ways of generating default estimates.
+    # E.g., random numbers. The value should be considered relative to the win-reward (100).
     return 1
 
 def generateStrategy(board,
@@ -211,6 +250,8 @@ def generateStrategy(board,
     printPolicy(board, Q, moveSymbolMap, goalPos)
 
 
+##    Some examples of the learning algorithm in action:
+
 def example1():
     """Example of 10x7 board with a wind from the south"""
     windSpeeds = {3:1, 4:1, 5:1, 6:2, 7:2, 8:1} # Increment y by this amount when movement ends with x on the key-value
@@ -221,7 +262,16 @@ def example1():
 
     generateStrategy(board, startPos, goalPos)
 
+def example2():
+    """Example of an 'express-way' wind. Strong wind to the right (east) on a single y-level"""
+    wind  = WestWind({1:4})
+    board = Board(12, 7, wind)
 
+    startingPosition = Position(1,3)
+    goalPosition     = Position(10, 3)
+
+    generateStrategy(board, startingPosition, goalPosition, totalSteps=50000)
+    
     
 
     
