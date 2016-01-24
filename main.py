@@ -1,7 +1,7 @@
 import random
 
 ##    The Windy Gridworld learning problem is the task of finding an optimal way of going from one point to
-##    another on a rectangular grid while being pushed around by wind. We will solve this using the sarsa
+##    another on a rectangular grid while being pushed around by wind. We will solve this using the Sarsa
 ##    algorithm, an on-policy temporal difference learning algorithm.
 ##
 ##    The main thing to implement for the learning algorithm is the world itself. That is the
