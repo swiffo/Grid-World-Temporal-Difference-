@@ -25,6 +25,6 @@ R D D R U * * * D D
 D D R D * * * * * D
 ```
 
-U = Up, D = Down, L = Left, R = Right, @ = Goal, * = unreachable
+U = Up, D = Down, L = Left, R = Right, @ = Goal, * = not learned/unreachable
 
 In the code `example1()` learns and prints this strategy.
