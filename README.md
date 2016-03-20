@@ -1,8 +1,12 @@
 # Grid World Temporal Difference Learning
 
-This problem is taken from the book *Reinforcement Learning* by Richard S. Sutton and Andrew G. Barto (Example 6.5, exercises 6.6, 6.7).
+The *Windy Gridworld* learning problem is the task of finding an optimal way of going from one point to
+another on a rectangular grid while being pushed around by wind. We will solve this using the Sarsa
+algorithm, an on-policy temporal difference learning algorithm.
 
-> On a rectangular grid, the Grid World, an agent, starting at a given point, has for each discrete time-step a number of moves available to him (e.g., go right one step). At the same time a wind blows cold, pushing him around the grid depending on his position. **The agent must find a way to get to a given node in the grid as fast as possible.** 
+The problem is taken from the book *Reinforcement Learning* by Richard S. Sutton and Andrew G. Barto (Example 6.5, exercises 6.6, 6.7).
+
+> On a rectangular grid, the Grid World, an agent, starting at a given point, has for each discrete time-step a number of moves available to him (one step right, left, up or down). At the same time a wind blows cold, pushing him around the grid depending on his position. **The agent must find a way to get to a given node in the grid as fast as possible.** 
 
 > The grid is bounded by an invisible wall. Any movement that would take the agent outside the grid instead places him at the edge. The wind contribution to the agent's move is based on his starting position in each time-step.
 
