@@ -77,8 +77,11 @@ class Move:
     def __hash__(self):
         return hash(self._vector)
 
+class Error(Exception):
+    """Module base error"""
+    pass
 
-class InvalidPositionException(BaseException):
+class InvalidPositionException(Error):
     """Exception for referring to a position not on the board"""
     pass
 
@@ -173,22 +176,22 @@ def max_arg(array):
 
 def print_policy(board, Q, move_symbol_map, goal_position):
     """Prints ASCII representation of the best move for each board position"""
-    unknownMove  = "*"
+    unknown_move_symbol = "*"
     allowed_moves = list(move_symbol_map.keys())
     max_x, max_y = board.dimensions()
 
-    def moveSymbol(position):
+    def move_symbol(position):
         if position == goal_position:
             return "@"
         
         vals = [Q.get((position, m), -1) for m in allowed_moves]
         
         if max(vals) == -1:
-            return unknownMove
+            return unknown_move_symbol
         else:
             return move_symbol_map[allowed_moves[max_arg(vals)]]
             
-    symbols = [[moveSymbol(Position(x, y)) for x in range(max_x+1)] for y in range(max_y, -1, -1)]
+    symbols = [[move_symbol(Position(x, y)) for x in range(max_x+1)] for y in range(max_y, -1, -1)]
     text = "\n".join([" ".join(line) for line in symbols])
     print(text)
 
@@ -267,11 +270,11 @@ def example1():
 
 def example2():
     """Example of an 'express-way' wind. Strong wind to the right (east) on a single y-level"""
-    wind  = WestWind({1:4})
+    wind = WestWind({1:4})
     board = Board(12, 7, wind)
 
     starting_position = Position(1,3)
-    goal_position     = Position(10, 3)
+    goal_position = Position(10, 3)
 
     generate_strategy(board, starting_position, goal_position, total_steps=50000)
 
